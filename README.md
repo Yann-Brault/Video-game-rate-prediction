@@ -1,2 +1,4 @@
-# TATIA-Project
-TATIA project repo
+# Video-Game-Rate-Prediction
+
+Student Project for M1.
+
