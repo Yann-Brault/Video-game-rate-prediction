@@ -5,6 +5,7 @@ Base Predictor on data. Used the positive and negative weight of the meaning of 
 import pandas as pd
 import unidecode
 import re
+import time
 
 NEG_WORD: list[str]
 POS_WORD: list[str]
@@ -26,10 +27,10 @@ def load_lexicon():
 def remove_accents(text):
     return unidecode.unidecode(text)
 
-
 NEG_WORD, POS_WORD = load_lexicon()
 
 data = pd.read_csv('dataset/dataset_original.csv')
+start = time.time_ns()
 
 row = data['avis'][33]
 row = remove_accents(row).lower()
@@ -49,5 +50,7 @@ for word in row_decode:
     if word in POS_WORD:
         pos+=1
 
+end = time.time_ns()
+print((end - start)/10**9 )
 print("neg count", neg)
 print("pos count", pos)
