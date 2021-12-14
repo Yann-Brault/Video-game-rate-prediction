@@ -20,17 +20,18 @@ def format_name(df):
     df.to_csv("./refactored_dataset.csv")
 
 def replace_nan(df):
-    for review, i in enumerate(df["avis"]):
-        if p.isna(review):
-            if df["note"][i] > 11:
-                df["avis"][i] = "good"
+    for i in range(df.shape[0]):
+        if p.isna(df["avis"][i]):
+            if df["note"][i] > 11: 
+                df.at[i, "avis"] = "good"
             else:
-                df["avis"][i] = "bad"
+                df.at[i, "avis"] = "bad"
     return df
 
+
+# Permet d'avoir un graphique des mots les plus fréquents du corpus
 def show_frequencies(df):
     corpus = df["avis"]
-    print(corpus)
     cv = CountVectorizer()
     bow  = cv.fit_transform(corpus)
     word_freq = dict(zip(cv.get_feature_names(), np.asarray(bow.sum(axis=0)).ravel()))
@@ -39,7 +40,7 @@ def show_frequencies(df):
 
     fig, ax = plt.subplots(figsize=(12, 10))
     sns.barplot(x="word", y="freq", data=word_counter_df, palette="PuBuGn_d", ax=ax)
-    plt.show
+    plt.show()
 
 
 
