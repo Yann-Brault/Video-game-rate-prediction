@@ -2,3 +2,6 @@ sklearn
 pandas
 numpy
 unidecode
+tqdm
+matplotlib
+seaborn
