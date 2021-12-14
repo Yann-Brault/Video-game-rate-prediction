@@ -5,3 +5,4 @@ unidecode
 tqdm
 matplotlib
 seaborn
+pyspellchecker
