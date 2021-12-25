@@ -2,13 +2,14 @@ import pandas as pd
 
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
 from src.classifiers.Classifier import ClassifierType
+from src.classifiers.ClassifierWord2VecBis import ClassifierWord2VecMix
 from src.classifiers.NaivesBayesClassifier import NaivesBayes
 from src.prediction_advanced.clean_data import CleanData
 
 
-PREDICT = True
-SAVE = False
-LOAD = True
+PREDICT = False
+SAVE = True
+LOAD = False
 MODEL_NAME = 'models/testNaives2_4000.model'
 JSON_FEATURES = 'models/features_naives_4000.json'
 
@@ -21,14 +22,13 @@ DATASET = 'dataset/csv/dataset_clean_2.0.csv_repartion_fixed.csv'
 VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
 
 
-CLASSIFIER = ClassifierType.NAIVES_BAYES
+CLASSIFIER = ClassifierType.WORD2VEC_MIX
 
 
 if __name__ == "__main__":
     df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
     
     if CLASSIFIER == ClassifierType.WORD2VEC:
-
         classifier = ClassifierWord2Vec(
             data=df,
             word2vec_bin=VEC_BIN,
@@ -37,7 +37,6 @@ if __name__ == "__main__":
             layers=LAYERS,
             vec_dim=VEC_DIM,
             test_size=TEST_SIZE,
-            create = True
         )
 
     elif CLASSIFIER == ClassifierType.NAIVES_BAYES:
@@ -46,10 +45,22 @@ if __name__ == "__main__":
             test_size=TEST_SIZE
         )
 
+    elif CLASSIFIER == ClassifierType.WORD2VEC_MIX:
+        classifier = ClassifierWord2VecMix(
+            data=df,
+            word2vec_bin=VEC_BIN,
+            max_word=MAX_WORD,
+            max_iter=MAX_ITER,
+            layers=LAYERS,
+            vec_dim=VEC_DIM,
+            test_size=TEST_SIZE,
+        )
+    
     else:
         pass
 
-    classifier.show_repartition()
+    # classifier.show_repartition()
+
 
     if LOAD:
         classifier.load(MODEL_NAME, JSON_FEATURES)

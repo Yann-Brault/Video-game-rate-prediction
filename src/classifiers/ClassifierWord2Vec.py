@@ -11,8 +11,6 @@ from src.prediction_advanced.utils import compute_metrics
 from src.classifiers.Classifier import Classifier
 
 
-
-
 class ClassifierWord2Vec(Classifier):
 
     def __init__(self, data, word2vec_bin = None, max_word=0, max_iter=0, test_size=0, layers=0, vec_dim=0, create = True) -> None:
@@ -27,18 +25,11 @@ class ClassifierWord2Vec(Classifier):
     
         self.words_dictionary = None
 
-        if create:
-            self.load_dictionnary_from_bin()
-        else:
-            self.create_dictionnary()
+        self.load_dictionnary_from_bin()
 
     def load_dictionnary_from_bin(self):
         print(f"Loading dictionary from binary {self.word2vec_bin}...")
         self.words_dictionnary: KeyedVectors = KeyedVectors.load_word2vec_format(self.word2vec_bin, binary=True)
-
-    def create_dictionnary(self):
-        print("Creating vector dictionary from scratch...")
-        pass
 
     def init_sets(self):
         print("Initialization of train and test sets...")

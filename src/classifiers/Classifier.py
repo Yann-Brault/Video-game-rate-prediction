@@ -1,9 +1,11 @@
 from joblib import dump, load
 from enum import Enum
 
+
 class ClassifierType(Enum):
     WORD2VEC = 1
     NAIVES_BAYES = 2
+    WORD2VEC_MIX = 3
     
 
 class Classifier:
@@ -17,8 +19,6 @@ class Classifier:
         self.y_train = None
         self.X_test = None
         self.y_test = None
-        
-        pass
     
     def show_repartition(self) -> None:
         print(self.data.groupby(['classe_bon_mauvais'], as_index=False).count())
