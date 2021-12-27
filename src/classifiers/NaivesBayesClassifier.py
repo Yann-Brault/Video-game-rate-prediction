@@ -3,7 +3,7 @@ import collections
 from sklearn.model_selection import train_test_split
 
 from src.classifiers.Classifier import Classifier
-from src.prediction_advanced.clean_data import CleanData
+from src.utils.clean_data import CleanData
 from joblib import dump, load
 import json
 

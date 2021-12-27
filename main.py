@@ -1,38 +1,14 @@
 import pandas as pd
-from scipy.sparse import data
-from sklearn.naive_bayes import MultinomialNB
-from src.classifiers.TFIDF_LogReg import TFIFF_LogReg_classic
 
+from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
 from src.classifiers.Classifier import ClassifierType
 from src.classifiers.ClassifierWord2VecMix import ClassifierWord2VecMix
 from src.classifiers.NaivesBayesClassifier import NaivesBayes
-from src.classifiers.TFIDF_Multinomial import TFIFF_Multinomial_classic
-from src.prediction_advanced.clean_data import CleanData
+from src.classifiers.TFIDF_Multinomial import TFIDF_MNB
 
+from src.utils.clean_data import CleanData
 
-PREDICT = False
-SAVE = True
-LOAD = False
-MODEL_NAME = 'models/Log_Reg_Classic.model'
-JSON_FEATURES = 'models/features_naives_4000.json'
-
-NB_WORD_NB = 4000
-MAX_WORD = 300
-MAX_ITER = 500
-TEST_SIZE = 1/3
-LAYERS = (13, 13, 13)
-VEC_DIM = 200
-REG = 1.0
-ALPHA = 1.0
-
-
-MAX_FEATURES = 10000
-DATASET = 'dataset/csv/dataset_new_repartition_4.csv'
-VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
-
-
-CLASSIFIER = ClassifierType.LOG_REG_CLASSIC
 
 class PipelineClassifier:
 
@@ -54,7 +30,7 @@ class PipelineClassifier:
         self.__init_classifier()
 
     def __init_classifier(self):
-        if CLASSIFIER == ClassifierType.WORD2VEC:
+        if self.classifier_type == ClassifierType.WORD2VEC:
             self.classifier = ClassifierWord2Vec(
                 data=self.data,
                 word2vec_bin=self.vec_bin,
@@ -65,14 +41,14 @@ class PipelineClassifier:
                 test_size=self.test_size,
             )
 
-        elif CLASSIFIER == ClassifierType.NAIVES_BAYES:
+        elif self.classifier_type == ClassifierType.NAIVES_BAYES:
             self.classifier = NaivesBayes(
                 data=self.data,
                 nb_word=self.nb_word_n,
                 test_size=self.test_size
             )
 
-        elif CLASSIFIER == ClassifierType.WORD2VEC_MIX:
+        elif self.classifier_type == ClassifierType.WORD2VEC_MIX:
             self.classifier = ClassifierWord2VecMix(
                 data=self.data,
                 word2vec_bin=self.vec_bin,
@@ -83,8 +59,8 @@ class PipelineClassifier:
                 test_size=self.test_size,
             )
         
-        elif CLASSIFIER == ClassifierType.LOG_REG_CLASSIC:
-            self.classifier = TFIFF_LogReg_classic(
+        elif self.classifier_type == ClassifierType.TFIDF_LogReg:
+            self.classifier = TFIDF_LogReg(
                 data=self.data,
                 test_size=self.test_size,
                 max_iter=self.max_iter,
@@ -92,8 +68,8 @@ class PipelineClassifier:
                 max_features=self.max_features
             )
 
-        elif CLASSIFIER == ClassifierType.MNB_CLASSIC:
-            self.classifier = TFIFF_Multinomial_classic(
+        elif self.classifier_type == ClassifierType.TFIDF_MNB:
+            self.classifier = TFIDF_MNB(
                 data=self.data,
                 test_size=self.test_size,
                 alpha=self.alpha,
@@ -127,90 +103,71 @@ class PipelineClassifier:
         review = c.clean_review(review)
         review = self.classifier.predict_input(review)
 
+
+MODEL_NAME = 'models/Log_Reg_Classic.model'
+JSON_FEATURES = 'models/features_naives_4000.json'
+
+NB_WORD_NB = 4000
+MAX_WORD = 300
+MAX_ITER = 500
+TEST_SIZE = 1/3
+LAYERS = (13, 13, 13)
+VEC_DIM = 200
+REG = 1.0
+ALPHA = 1.0
+
+
+MAX_FEATURES = 10000
+VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
+
+
+CLASSIFIER = ClassifierType.TFIDF_MNB
+DATA_ANALYSIS = False
+
+DATASET = 'dataset/csv/dataset_0-1.csv'
+
+PLOT_MATRIX_PATH = 'assets/data_analysis/data_original_matrix.plot.png'
+CP_PATH = 'assets/data_analysis/data_original_cp.txt'
+PLOT_ACC_PATH = ''
+PLOT_PREC_PATH = ''
+
+MODEL_PATH = ''
+CLASSES = [0,1]
+
+
 if __name__ == "__main__":
-    df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
-    
-    p = PipelineClassifier(ClassifierType.LOG_REG_CLASSIC, df, test_size=TEST_SIZE, max_iter=MAX_ITER, reg=REG, max_features=MAX_FEATURES)
 
 
-    p.train()
-    p.predict()
+    if DATA_ANALYSIS:
+        df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
+        p = PipelineClassifier(CLASSIFIER, df, test_size=TEST_SIZE, alpha=ALPHA, max_features=MAX_FEATURES)
 
-    # if CLASSIFIER == ClassifierType.WORD2VEC:
-    #     classifier = ClassifierWord2Vec(
-    #         data=df,
-    #         word2vec_bin=VEC_BIN,
-    #         max_word=MAX_WORD,
-    #         max_iter=MAX_ITER,
-    #         layers=LAYERS,
-    #         vec_dim=VEC_DIM,
-    #         test_size=TEST_SIZE,
-    #     )
+        p.train()
+        p.predict()
 
-    # elif CLASSIFIER == ClassifierType.NAIVES_BAYES:
-    #     classifier = NaivesBayes(
-    #         data=df,
-    #         nb_word=NB_WORD_NB,
-    #         test_size=TEST_SIZE
-    #     )
+        p.classifier.plot_matrix_classification_report(CP_PATH, PLOT_MATRIX_PATH, CLASSES)
 
-    # elif CLASSIFIER == ClassifierType.WORD2VEC_MIX:
-    #     classifier = ClassifierWord2VecMix(
-    #         data=df,
-    #         word2vec_bin=VEC_BIN,
-    #         max_word=MAX_WORD,
-    #         max_iter=MAX_ITER,
-    #         layers=LAYERS,
-    #         vec_dim=VEC_DIM,
-    #         test_size=TEST_SIZE,
-    #     )
-    
-    # elif CLASSIFIER == ClassifierType.LOG_REG_CLASSIC:
-    #     classifier = TFIFF_LogReg_classic(
-    #         data=df,
-    #         test_size=TEST_SIZE,
-    #         max_iter=MAX_ITER,
-    #         regularization=REG,
-    #         max_features=MAX_FEATURES
-    #     )
-    # elif CLASSIFIER == ClassifierType.MNB_CLASSIC:
-    #     classifier = TFIFF_Multinomial_classic(
-    #         data=df,
-    #         test_size=TEST_SIZE,
-    #         alpha=ALPHA,
-    #         max_features=MAX_FEATURES
-    #     )
-    
+    else:
+        
+        df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
-    # # classifier.show_repartition()
+        params = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
 
+        accuracies = []
+        precisions = [[], []]
 
-    # if LOAD:
-    #     classifier.load(MODEL_NAME, JSON_FEATURES)
-    #     if not PREDICT:
-    #         classifier.init_sets()
-    #         classifier.X_train = None
-    #         classifier.y_train = None
-    #         classifier.fit_transform_data()
-    # else:
-    #     classifier.init_sets()
-    #     classifier.init_classifier()
-    #     classifier.fit_transform_data()
-    #     classifier.train()
+        for i in range(len(params)):
 
-    # if SAVE:
-    #     classifier.save(MODEL_NAME, JSON_FEATURES)
+            p = PipelineClassifier(CLASSIFIER, df, test_size=params[i], alpha=ALPHA, max_features=MAX_FEATURES)
+            p.train()
+            p.predict()
+            
+            accuracies.append(p.classifier.get_accuracy())
+            for c in CLASSES:
+                precisions[c].append(p.classifier.get_precisions(c))
 
-    # if PREDICT:
-    #     review = input("Write a review to predict: \n")
-    #     c = CleanData(MAX_WORD)
-    #     review = c.clean_review(review)
-    #     review = classifier.predict_input(review)
+        p.classifier.plot_accuracy_precisions()
+        
+            
 
-    # else:
-    #     classifier.predict()
-    #     classifier.show_results()
-
-    
-    

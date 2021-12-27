@@ -8,8 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 
 
-
-class TFIFF_Multinomial_classic(Classifier):
+class TFIDF_MNB(Classifier):
 
     def __init__(self, data, test_size, alpha, max_features) -> None:
         super().__init__(data)
@@ -29,6 +28,6 @@ class TFIFF_Multinomial_classic(Classifier):
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=self.test_size, random_state=0)
 
     def init_classifier(self):
-        print(f"Initialization of the LogReg Classifier with a reg of {self.regularization} and {self.max_iter} max iteration.")
+        print(f"Initialization of the LogReg Classifier with a alpha of {self.alpha}.")
         self.classifier = MultinomialNB(alpha=self.alpha)
 

@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 
 
 
-class TFIFF_LogReg_classic(Classifier):
+class TFIDF_LogReg(Classifier):
 
     def __init__(self, data, test_size, max_iter, regularization, max_features) -> None:
         super().__init__(data)

@@ -7,7 +7,7 @@ from sklearn.metrics import classification_report
 
 from gensim.models.keyedvectors import KeyedVectors
 
-from src.prediction_advanced.utils import compute_metrics
+from src.utils.utils import compute_metrics
 from src.classifiers.Classifier import Classifier
 
 

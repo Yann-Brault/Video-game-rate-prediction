@@ -4,15 +4,15 @@ from enum import Enum
 import pandas as pd
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
-from src.prediction_advanced.utils import compute_metrics
+import src.utils.utils as u
 from sklearn.metrics import accuracy_score, classification_report
 
 class ClassifierType(Enum):
     WORD2VEC = 1
     NAIVES_BAYES = 2
     WORD2VEC_MIX = 3
-    MNB_CLASSIC = 4
-    LOG_REG_CLASSIC = 5
+    TFIDF_MNB = 4
+    TFIDF_LogReg = 5
     
     
 class Classifier:
@@ -68,15 +68,25 @@ class Classifier:
         print('\n Accuracy: ', accuracy_score(self.y_test, self.predictions))
         print('\n Score: ', self.classifier.score(self.X_test, self.y_test))
 
-        print(compute_metrics(2, M))
+        print(u.compute_metrics(2, M))
         print(classification_report(self.y_test, self.predictions))
 
     # Abstract methods
 
-    def plot_matrix_classification_report(self, path, classes):
+    def get_accuracy(self):
+        return accuracy_score(self.y_test, self.predictions)
+
+    def get_precisions(self, c):
+        d = classification_report(self.y_test, self.predictions, output_dict=True)
+        c_str = str(c)
+
+        return d[c_str]['precision']
+
+
+    def plot_matrix_classification_report(self, cp_path, matric_path, classes):
         pass
 
-    def plot_accuracy_precisions(self, path, classes: list[int], accuracies: list[list[int]], precisions: list[list[int]]):
+    def plot_accuracy_precisions(self, acc_path, prec_path, params, classes: list[int], accuracies: list[list[int]], precisions: list[list[int]]):
         pass
 
 
