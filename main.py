@@ -122,7 +122,7 @@ VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin
 
 
 CLASSIFIER = ClassifierType.TFIDF_MNB
-DATA_ANALYSIS = False
+DATA_ANALYSIS = True
 
 DATASET = 'dataset/csv/dataset_0-3.csv'
 

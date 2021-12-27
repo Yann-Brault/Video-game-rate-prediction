@@ -1,12 +1,15 @@
 from abc import abstractmethod
-from joblib import dump, load
 from enum import Enum
+from string import ascii_uppercase
+
+import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-import src.utils.utils as u
-from sklearn.metrics import accuracy_score, classification_report
 import matplotlib.pyplot as plt
+import seaborn as sb
+import src.utils.utils as u
+from joblib import dump, load
+from sklearn.metrics import (accuracy_score, classification_report,
+                             confusion_matrix)
 
 
 class ClassifierType(Enum):
@@ -85,8 +88,23 @@ class Classifier:
         return d[c_str]['precision']
 
 
-    def plot_matrix_classification_report(self, cp_path, matric_path, classes):
-        pass
+    def plot_matrix_classification_report(self, cp_path, matrix_path, classes):
+        y_test = self.y_test
+        predic = self.predictions
+
+        confm = confusion_matrix(y_test, predic)
+        df_cm = pd.DataFrame(confm, index=classes, columns=classes)
+
+        fig, ax = plt.subplots(figsize=(12,10))
+        sb.heatmap(df_cm, cmap='YlOrRd', annot=True, fmt='g', ax=ax)
+        plt.savefig(matrix_path)
+
+        c_r = classification_report(self.y_test, self.predictions)
+        f = open(cp_path, 'a')
+        f.write(c_r)
+        f.close()
+        
+        
 
     def plot_accuracy_precisions(self, acc_path, prec_path, label, params, classes: list[int], accuracies: list[int], precisions: list[list[int]]):
         
