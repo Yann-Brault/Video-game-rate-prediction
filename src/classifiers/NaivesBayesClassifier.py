@@ -13,13 +13,15 @@ import nltk
 class NaivesBayes(Classifier):
 
 
-    def __init__(self, data, test_size=0) -> None:
+    def __init__(self, data, nb_word, test_size=0) -> None:
         super().__init__(data)
 
         self.test_size = test_size
 
         self.train_set = None
         self.test_set = None
+
+        self.nb_word
 
         self.refsets = None
         self.testsets = None
@@ -47,7 +49,7 @@ class NaivesBayes(Classifier):
             for word in avis.split():
                 all_words[word] += 1
 
-        self.word_features = list(all_words)[:4000]
+        self.word_features = list(all_words)[:self.nb_word]
 
     def _compute_features(self, tuple_to_compute):
         print("get Features out of review ...")

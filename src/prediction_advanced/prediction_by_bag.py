@@ -77,7 +77,7 @@ if __name__ == "__main__":
         mlpc: MLPClassifier = load(MODEL_NAME)
         avis = input("write an opinions to predict : \n")
         c = CleanData(MAX_WORD)
-        avis = c.clean_avis(avis)
+        avis = c.clean_review(avis)
         v = VectorReader(WORD2VEC, VEC_DIM, MAX_WORD)
         v.init_embed()
         avis_vec = v.transform_to_vector_sum([avis])

@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
         avis = input("write an opinions to predict : \n")
         c = CleanData(MAX_WORD)
-        avis = c.clean_avis(avis)
+        avis = c.clean_review(avis)
         print(word_features)
         test = review_features(avis, word_features)
         print(nbc.classify(test))

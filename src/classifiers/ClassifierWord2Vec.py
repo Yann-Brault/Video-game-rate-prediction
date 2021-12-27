@@ -22,6 +22,7 @@ class ClassifierWord2Vec(Classifier):
         self.layers = layers
         self.vec_dim = vec_dim
         self.word2vec_bin = word2vec_bin
+        
     
         self.words_dictionary = None
 
@@ -49,7 +50,13 @@ class ClassifierWord2Vec(Classifier):
         for review in set_to_transform:
             print(f"{acc}/{len_set}", end='\r')
             acc+=1
-            reviews_list = review.split()
+            try:
+                reviews_list = review.split()
+            except:
+                print('exception !', review)
+                if (type(review) == float):
+                    print(type(review))
+                exit()
             reviews_vec = []
             
             for word in reviews_list:
