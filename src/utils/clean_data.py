@@ -4,7 +4,7 @@ from spellchecker import SpellChecker
 import pandas as pd
 from pandas.core.frame import DataFrame
 from tqdm import trange
-import unidecode
+
 
 
 class CleanData:
