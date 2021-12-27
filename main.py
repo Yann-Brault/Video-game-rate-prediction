@@ -2,12 +2,14 @@ import pandas as pd
 
 from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
-from src.classifiers.Classifier import ClassifierType
+from src.classifiers.Classifier import Classifier, ClassifierType
 from src.classifiers.ClassifierWord2VecMix import ClassifierWord2VecMix
 from src.classifiers.NaivesBayesClassifier import NaivesBayes
 from src.classifiers.TFIDF_Multinomial import TFIDF_MNB
+from src.classifiers.TFIDF_MLP import TFIDF_MLP
 
 from src.utils.clean_data import CleanData
+from src.utils.utils import grid
 
 
 class PipelineClassifier:
@@ -75,6 +77,15 @@ class PipelineClassifier:
                 alpha=self.alpha,
                 max_features=self.max_features
             )
+        elif self.classifier_type == ClassifierType.TFIDF_MLP:
+            self.classifier = TFIDF_MLP(
+                data=self.data,
+                test_size=self.test_size,
+                max_iter=self.max_iter,
+                layers=self.layers,
+                max_features=self.max_features
+            )
+            
     
     def load(self, model_path, features_path=None):
         self.classifier.load(model_path, features_path)
@@ -109,33 +120,32 @@ JSON_FEATURES = 'models/features_naives_4000.json'
 
 NB_WORD_NB = 4000
 MAX_WORD = 300
-MAX_ITER = 500
-TEST_SIZE = 1/3
+MAX_ITER = 250
+TEST_SIZE = 1/4
 LAYERS = (13, 13, 13)
 VEC_DIM = 200
 REG = 1.0
-ALPHA = 1.0
+ALPHA = 3.0
 
-
-MAX_FEATURES = 10000
+MAX_FEATURES = 9000
 VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
 
 
-CLASSIFIER = ClassifierType.TFIDF_MNB
+CLASSIFIER = ClassifierType.TFIDF_LogReg
 DATA_ANALYSIS = True
 
-DATASET = 'dataset/csv/dataset_0-3.csv'
+DATASET = 'dataset/csv/dataset_0-1.csv'
 
-PLOT_MATRIX_PATH = 'assets/data_analysis/data_original_matrix.plot.png'
-CP_PATH = 'assets/data_analysis/data_original_cp.txt'
-PLOT_ACC_PATH = 'assets/test_acc'
-PLOT_PREC_PATH = 'assets/test_prec'
+PLOT_MATRIX_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1.plot.png'
+CP_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_cp.txt'
+PLOT_ACC_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_acc.plot.png'
+PLOT_PREC_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_prec.plot.png'
 
-TILE_CM = 'CM'
-TITLE_PREC_ACC = 'PE3DZQD'
+TILE_CM = 'grid_search_logreg_dataset_0-1_CM'
+TITLE_PREC_ACC = 'grid_search_logreg_dataset_0-1_Prec_Acc'
 
 MODEL_PATH = ''
-CLASSES = [0,1,2,3]
+CLASSES = [0,1]
 
 
 if __name__ == "__main__":
@@ -144,8 +154,13 @@ if __name__ == "__main__":
     if DATA_ANALYSIS:
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
-        p = PipelineClassifier(CLASSIFIER, df, test_size=TEST_SIZE, alpha=ALPHA, max_features=MAX_FEATURES)
-
+        params = {
+            'C' : [0.25, 0.5, 0.75, 1.0],
+            'max_iter' : [250, 500, 750, 1000]
+        }
+        
+        p = PipelineClassifier(CLASSIFIER, df, test_size=TEST_SIZE, max_iter=MAX_ITER, reg=REG, max_features=MAX_FEATURES)
+        
         p.train()
         p.predict()
 
@@ -155,14 +170,14 @@ if __name__ == "__main__":
         
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
-        params = [0.1, 0.6]
+        params = [4500, 6000, 7500, 9000, 10500, 12000, 13500, 15000]
 
         accuracies = []
-        precisions = [[], [], [], []]
+        precisions = [[], []]
 
         for i in range(len(params)):
 
-            p = PipelineClassifier(CLASSIFIER, df, test_size=params[i], alpha=ALPHA, max_features=MAX_FEATURES)
+            p = PipelineClassifier(CLASSIFIER, df, test_size=TEST_SIZE, max_iter=MAX_ITER, reg=REG, max_features=params[i])
             p.train()
             p.predict()
             
@@ -170,7 +185,6 @@ if __name__ == "__main__":
             for c in CLASSES:
                 precisions[c].append(p.classifier.get_precisions(c))
 
-        p.classifier.plot_accuracy_precisions(TITLE_PREC_ACC, PLOT_ACC_PATH, PLOT_PREC_PATH, 'test size', params, CLASSES, accuracies, precisions)
+        p.classifier.plot_accuracy_precisions(TITLE_PREC_ACC, PLOT_ACC_PATH, PLOT_PREC_PATH, TITLE_PREC_ACC, params, CLASSES, accuracies, precisions)
         
             
-
