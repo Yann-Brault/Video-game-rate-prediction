@@ -88,7 +88,7 @@ class Classifier:
         return d[c_str]['precision']
 
 
-    def plot_matrix_classification_report(self, cp_path, matrix_path, classes):
+    def plot_matrix_classification_report(self, title, cp_path, matrix_path, classes):
         y_test = self.y_test
         predic = self.predictions
 
@@ -96,6 +96,7 @@ class Classifier:
         df_cm = pd.DataFrame(confm, index=classes, columns=classes)
 
         fig, ax = plt.subplots(figsize=(12,10))
+        ax.set_title('Confusion matrix for '+ title)
         sb.heatmap(df_cm, cmap='YlOrRd', annot=True, fmt='g', ax=ax)
         plt.savefig(matrix_path)
 
@@ -106,14 +107,18 @@ class Classifier:
         
         
 
-    def plot_accuracy_precisions(self, acc_path, prec_path, label, params, classes: list[int], accuracies: list[int], precisions: list[list[int]]):
+    def plot_accuracy_precisions(self, title, acc_path, prec_path, label, params, classes: list[int], accuracies: list[int], precisions: list[list[int]]):
         
+        # Accuracy
+        plt.title('Accuracy for ' + title)
         plt.xlabel(label)
         plt.ylabel('accuracy')
         plt.plot(params, accuracies)
         plt.savefig(acc_path)
         plt.show()
 
+        # Precisions
+        plt.title('Precisions for ' + title)
         plt.xlabel(label)
         plt.ylabel('precisions')
         

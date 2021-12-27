@@ -131,13 +131,16 @@ CP_PATH = 'assets/data_analysis/data_original_cp.txt'
 PLOT_ACC_PATH = 'assets/test_acc'
 PLOT_PREC_PATH = 'assets/test_prec'
 
+TILE_CM = 'CM'
+TITLE_PREC_ACC = 'PE3DZQD'
+
 MODEL_PATH = ''
 CLASSES = [0,1,2,3]
 
 
 if __name__ == "__main__":
 
-
+    
     if DATA_ANALYSIS:
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
@@ -146,7 +149,7 @@ if __name__ == "__main__":
         p.train()
         p.predict()
 
-        p.classifier.plot_matrix_classification_report(CP_PATH, PLOT_MATRIX_PATH, CLASSES)
+        p.classifier.plot_matrix_classification_report(TILE_CM, CP_PATH, PLOT_MATRIX_PATH, CLASSES)
 
     else:
         
@@ -167,7 +170,7 @@ if __name__ == "__main__":
             for c in CLASSES:
                 precisions[c].append(p.classifier.get_precisions(c))
 
-        p.classifier.plot_accuracy_precisions(PLOT_ACC_PATH, PLOT_PREC_PATH, 'test size', params, CLASSES, accuracies, precisions)
+        p.classifier.plot_accuracy_precisions(TITLE_PREC_ACC, PLOT_ACC_PATH, PLOT_PREC_PATH, 'test size', params, CLASSES, accuracies, precisions)
         
             
 
