@@ -6,6 +6,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 import src.utils.utils as u
 from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+
 
 class ClassifierType(Enum):
     WORD2VEC = 1
@@ -86,8 +88,25 @@ class Classifier:
     def plot_matrix_classification_report(self, cp_path, matric_path, classes):
         pass
 
-    def plot_accuracy_precisions(self, acc_path, prec_path, params, classes: list[int], accuracies: list[list[int]], precisions: list[list[int]]):
-        pass
+    def plot_accuracy_precisions(self, acc_path, prec_path, label, params, classes: list[int], accuracies: list[int], precisions: list[list[int]]):
+        
+        plt.xlabel(label)
+        plt.ylabel('accuracy')
+        plt.plot(params, accuracies)
+        plt.savefig(acc_path)
+        plt.show()
+
+        plt.xlabel(label)
+        plt.ylabel('precisions')
+        
+        color = ['r', 'b', 'g', 'y']
+        for i in range(len(precisions)):
+            plt.plot(params, precisions[i], color=color[i], label=classes[i])
+        plt.legend(loc="upper right", title='classes')
+
+        plt.savefig(prec_path)
+        plt.show()
+
 
 
     @abstractmethod

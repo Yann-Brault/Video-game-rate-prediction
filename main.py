@@ -124,15 +124,15 @@ VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin
 CLASSIFIER = ClassifierType.TFIDF_MNB
 DATA_ANALYSIS = False
 
-DATASET = 'dataset/csv/dataset_0-1.csv'
+DATASET = 'dataset/csv/dataset_0-3.csv'
 
 PLOT_MATRIX_PATH = 'assets/data_analysis/data_original_matrix.plot.png'
 CP_PATH = 'assets/data_analysis/data_original_cp.txt'
-PLOT_ACC_PATH = ''
-PLOT_PREC_PATH = ''
+PLOT_ACC_PATH = 'assets/test_acc'
+PLOT_PREC_PATH = 'assets/test_prec'
 
 MODEL_PATH = ''
-CLASSES = [0,1]
+CLASSES = [0,1,2,3]
 
 
 if __name__ == "__main__":
@@ -152,10 +152,10 @@ if __name__ == "__main__":
         
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
-        params = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+        params = [0.1, 0.6]
 
         accuracies = []
-        precisions = [[], []]
+        precisions = [[], [], [], []]
 
         for i in range(len(params)):
 
@@ -167,7 +167,7 @@ if __name__ == "__main__":
             for c in CLASSES:
                 precisions[c].append(p.classifier.get_precisions(c))
 
-        p.classifier.plot_accuracy_precisions()
+        p.classifier.plot_accuracy_precisions(PLOT_ACC_PATH, PLOT_PREC_PATH, 'test size', params, CLASSES, accuracies, precisions)
         
             
 
