@@ -124,15 +124,15 @@ VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin
 CLASSIFIER = ClassifierType.TFIDF_MNB
 DATA_ANALYSIS = True
 
-DATASET = 'dataset/csv/dataset_0-1.csv'
+DATASET = 'dataset/csv/dataset_0-3.csv'
 
-PLOT_MATRIX_PATH = 'assets/data_analysis/dataset_0-1.plot.png'
-CP_PATH = 'assets/data_analysis/dataset_0-1.txt'
+PLOT_MATRIX_PATH = 'assets/data_analysis/dataset_0-3.plot.png'
+CP_PATH = 'assets/data_analysis/dataset_0-3.txt'
 PLOT_ACC_PATH = ''
 PLOT_PREC_PATH = ''
 
 MODEL_PATH = ''
-CLASSES = [0,1]
+CLASSES = [0,1,2,3]
 
 
 if __name__ == "__main__":
