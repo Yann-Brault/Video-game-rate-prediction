@@ -3,13 +3,15 @@ from src.classifiers.MLPClassifierW2V import MLP_Word2Vec
 
 from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
-from src.classifiers.Classifier import ClassifierType
+from src.classifiers.Classifier import Classifier, ClassifierType
 from src.classifiers.ClassifierWord2VecMix import ClassifierWord2VecMix
 from src.classifiers.NaivesBayesClassifier import NaivesBayes
 from src.classifiers.TFIDF_Multinomial import TFIDF_MNB
 from sklearn.neural_network import MLPClassifier
+from src.classifiers.TFIDF_MLP import TFIDF_MLP
 
 from src.utils.clean_data import CleanData
+from src.utils.utils import grid
 
 
 class PipelineClassifier:
@@ -75,15 +77,16 @@ class PipelineClassifier:
                 alpha=self.alpha,
                 max_features=self.max_features
             )
-        elif self.classifier_type == ClassifierType.MLP_Word2Vec:
-            self.classifier = MLP_Word2Vec(
+        elif self.classifier_type == ClassifierType.TFIDF_MLP:
+            self.classifier = TFIDF_MLP(
                 data=self.data,
                 test_size=self.test_size,
                 max_iter=self.max_iter,
-                regularization=self.reg,
+                layers=self.layers,
                 max_features=self.max_features
             )
-
+            
+    
     def load(self, model_path, features_path=None):
         self.classifier.load(model_path, features_path)
         self.classifier.init_sets()
@@ -124,34 +127,32 @@ JSON_FEATURES = 'models/features_naives_4000.json'
 
 NB_WORD_NB = 4000
 MAX_WORD = 300
-MAX_ITER = 500
-TEST_SIZE = 0.2
+MAX_ITER = 250
+TEST_SIZE = 1/4
 LAYERS = (13, 13, 13)
 VEC_DIM = 200
 REG = 1.0
-ALPHA = 1.0
+ALPHA = 3.0
 
-
-MAX_FEATURES = 10000
+MAX_FEATURES = 9000
 VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
 
 
-CLASSIFIER = ClassifierType.WORD2VEC
+CLASSIFIER = ClassifierType.TFIDF_LogReg
 DATA_ANALYSIS = True
 
-DATASET = 'dataset/csv/dataset_0-3.csv'
+DATASET = 'dataset/csv/dataset_0-1.csv'
 
-PLOT_MATRIX_PATH = 'assets/w2v/mlp/word2vec_LogReg_cm_0-3.plot.png'
-CP_PATH = 'assets/w2v/mlp/word2vec_LogReg_cr_0-3.txt'
+PLOT_MATRIX_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1.plot.png'
+CP_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_cp.txt'
+PLOT_ACC_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_acc.plot.png'
+PLOT_PREC_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_prec.plot.png'
 
-PLOT_ACC_PATH = 'assets/features/nb/naives_bayes_4500_cm_0-3.plot.png'
-PLOT_PREC_PATH = 'assets/features/nb/naives_bayes__4500_cm_0-3.plot.png'
+TILE_CM = 'grid_search_logreg_dataset_0-1_CM'
+TITLE_PREC_ACC = 'grid_search_logreg_dataset_0-1_Prec_Acc'
 
-TILE_CM = 'Naives Bayes 4500 words'
-TITLE_PREC_ACC = 'number of words'
-
-MODEL_PATH = 'assets/features/nb/naives_bayes'
-CLASSES = [0,1,2,3]
+MODEL_PATH = ''
+CLASSES = [0,1]
 
 if __name__ == "__main__":
 

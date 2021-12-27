@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from enum import Enum
-from string import ascii_uppercase
+
 
 import numpy as np
 import pandas as pd
@@ -20,7 +20,7 @@ class ClassifierType(Enum):
     WORD2VEC_MIX = 3
     TFIDF_MNB = 4
     TFIDF_LogReg = 5
-    MLP_Word2Vec = 6
+    TFIDF_MLP = 6
     
     
 class Classifier:
