@@ -13,10 +13,9 @@ from src.classifiers.Classifier import Classifier
 
 class ClassifierWord2Vec(Classifier):
 
-    def __init__(self, data, word2vec_bin = None, max_word=0, max_iter=0, test_size=0, layers=0, vec_dim=0, create = True) -> None:
+    def __init__(self, data, word2vec_bin = None, max_iter=0, test_size=0, layers=0, vec_dim=0, create = True) -> None:
         super().__init__(data)
-
-        self.max_word = max_word
+        
         self.max_iter = max_iter
         self.test_size = test_size
         self.layers = layers
@@ -41,6 +40,7 @@ class ClassifierWord2Vec(Classifier):
     
     def init_classifier(self):
         print(f"Initialization of the MLP Classifier with {self.layers} layers and {self.max_iter} max iteration.")
+        
         self.classifier = MLPClassifier(hidden_layer_sizes=self.layers, max_iter=self.max_iter)
 
     def _transform_to_vec(self, set_to_transform):

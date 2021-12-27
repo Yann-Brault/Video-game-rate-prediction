@@ -11,6 +11,8 @@ from joblib import dump, load
 from sklearn.metrics import (accuracy_score, classification_report,
                              confusion_matrix)
 
+from tqdm import trange
+
 
 class ClassifierType(Enum):
     WORD2VEC = 1
@@ -18,6 +20,7 @@ class ClassifierType(Enum):
     WORD2VEC_MIX = 3
     TFIDF_MNB = 4
     TFIDF_LogReg = 5
+    MLP_Word2Vec = 6
     
     
 class Classifier:

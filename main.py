@@ -1,4 +1,5 @@
 import pandas as pd
+from src.classifiers.MLPClassifierW2V import MLP_Word2Vec
 
 from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
@@ -6,6 +7,7 @@ from src.classifiers.Classifier import ClassifierType
 from src.classifiers.ClassifierWord2VecMix import ClassifierWord2VecMix
 from src.classifiers.NaivesBayesClassifier import NaivesBayes
 from src.classifiers.TFIDF_Multinomial import TFIDF_MNB
+from sklearn.neural_network import MLPClassifier
 
 from src.utils.clean_data import CleanData
 
@@ -34,11 +36,10 @@ class PipelineClassifier:
             self.classifier = ClassifierWord2Vec(
                 data=self.data,
                 word2vec_bin=self.vec_bin,
-                max_word=self.max_word,
                 max_iter=self.max_iter,
                 layers=self.layers,
                 vec_dim=self.vec_dim,
-                test_size=self.test_size,
+                test_size=self.test_size
             )
 
         elif self.classifier_type == ClassifierType.NAIVES_BAYES:
@@ -52,11 +53,10 @@ class PipelineClassifier:
             self.classifier = ClassifierWord2VecMix(
                 data=self.data,
                 word2vec_bin=self.vec_bin,
-                max_word=self.max_word,
                 max_iter=self.max_iter,
                 layers=self.layers,
                 vec_dim=self.vec_dim,
-                test_size=self.test_size,
+                test_size=self.test_size
             )
         
         elif self.classifier_type == ClassifierType.TFIDF_LogReg:
@@ -75,7 +75,15 @@ class PipelineClassifier:
                 alpha=self.alpha,
                 max_features=self.max_features
             )
-    
+        elif self.classifier_type == ClassifierType.MLP_Word2Vec:
+            self.classifier = MLP_Word2Vec(
+                data=self.data,
+                test_size=self.test_size,
+                max_iter=self.max_iter,
+                regularization=self.reg,
+                max_features=self.max_features
+            )
+
     def load(self, model_path, features_path=None):
         self.classifier.load(model_path, features_path)
         self.classifier.init_sets()
@@ -90,6 +98,13 @@ class PipelineClassifier:
         self.classifier.init_sets()
         self.classifier.init_classifier()
         self.classifier.fit_transform_data()
+        self.classifier.train()
+
+    def transform_data(self):
+        self.classifier.init_sets()
+        self.classifier.fit_transform_data()
+    
+    def train_without_transform(self):
         self.classifier.train()
     
     def predict(self):
@@ -110,7 +125,7 @@ JSON_FEATURES = 'models/features_naives_4000.json'
 NB_WORD_NB = 4000
 MAX_WORD = 300
 MAX_ITER = 500
-TEST_SIZE = 1/3
+TEST_SIZE = 0.2
 LAYERS = (13, 13, 13)
 VEC_DIM = 200
 REG = 1.0
@@ -121,22 +136,22 @@ MAX_FEATURES = 10000
 VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
 
 
-CLASSIFIER = ClassifierType.TFIDF_MNB
+CLASSIFIER = ClassifierType.WORD2VEC
 DATA_ANALYSIS = True
 
 DATASET = 'dataset/csv/dataset_0-3.csv'
 
-PLOT_MATRIX_PATH = 'assets/data_analysis/data_original_matrix.plot.png'
-CP_PATH = 'assets/data_analysis/data_original_cp.txt'
-PLOT_ACC_PATH = 'assets/test_acc'
-PLOT_PREC_PATH = 'assets/test_prec'
+PLOT_MATRIX_PATH = 'assets/w2v/mlp/word2vec_LogReg_cm_0-3.plot.png'
+CP_PATH = 'assets/w2v/mlp/word2vec_LogReg_cr_0-3.txt'
 
-TILE_CM = 'CM'
-TITLE_PREC_ACC = 'PE3DZQD'
+PLOT_ACC_PATH = 'assets/features/nb/naives_bayes_4500_cm_0-3.plot.png'
+PLOT_PREC_PATH = 'assets/features/nb/naives_bayes__4500_cm_0-3.plot.png'
 
-MODEL_PATH = ''
+TILE_CM = 'Naives Bayes 4500 words'
+TITLE_PREC_ACC = 'number of words'
+
+MODEL_PATH = 'assets/features/nb/naives_bayes'
 CLASSES = [0,1,2,3]
-
 
 if __name__ == "__main__":
 
@@ -144,7 +159,7 @@ if __name__ == "__main__":
     if DATA_ANALYSIS:
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
-        p = PipelineClassifier(CLASSIFIER, df, test_size=TEST_SIZE, alpha=ALPHA, max_features=MAX_FEATURES)
+        p = PipelineClassifier(CLASSIFIER, data=df, vec_bin=VEC_BIN, max_iter=500, layers=LAYERS, vec_dim=VEC_DIM, test_size=TEST_SIZE)
 
         p.train()
         p.predict()
@@ -152,17 +167,16 @@ if __name__ == "__main__":
         p.classifier.plot_matrix_classification_report(TILE_CM, CP_PATH, PLOT_MATRIX_PATH, CLASSES)
 
     else:
-        
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
 
-        params = [0.1, 0.6]
+        params = [1500, 3000, 4500, 6000]
 
         accuracies = []
-        precisions = [[], [], [], []]
+        precisions = [[], []]
 
         for i in range(len(params)):
 
-            p = PipelineClassifier(CLASSIFIER, df, test_size=params[i], alpha=ALPHA, max_features=MAX_FEATURES)
+            p = PipelineClassifier(CLASSIFIER, data=df, nb_word_n=params[i], test_size=TEST_SIZE)
             p.train()
             p.predict()
             
@@ -170,7 +184,5 @@ if __name__ == "__main__":
             for c in CLASSES:
                 precisions[c].append(p.classifier.get_precisions(c))
 
-        p.classifier.plot_accuracy_precisions(TITLE_PREC_ACC, PLOT_ACC_PATH, PLOT_PREC_PATH, 'test size', params, CLASSES, accuracies, precisions)
+        p.classifier.plot_accuracy_precisions(TITLE_PREC_ACC, PLOT_ACC_PATH, PLOT_PREC_PATH, TITLE_PREC_ACC, params, CLASSES, accuracies, precisions)
         
-            
-

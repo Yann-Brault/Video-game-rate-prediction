@@ -21,7 +21,7 @@ class NaivesBayes(Classifier):
         self.train_set = None
         self.test_set = None
 
-        self.nb_word
+        self.nb_word = nb_word
 
         self.refsets = None
         self.testsets = None
@@ -123,7 +123,7 @@ class NaivesBayes(Classifier):
         self.testsets = collections.defaultdict(set)
         
         for i, (feats, label) in enumerate(self.test_set):
-            print(f"{i}/{len(self.test_set)}\n", end='')
+            print(f"{i}/{len(self.test_set)}", end='\r')
             self.refsets[label].add(i)
             observed = self.classifier.classify(feats)
             self.testsets[observed].add(i)
