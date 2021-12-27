@@ -1,5 +1,4 @@
 import pandas as pd
-from src.classifiers.MLPClassifierW2V import MLP_Word2Vec
 
 from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
