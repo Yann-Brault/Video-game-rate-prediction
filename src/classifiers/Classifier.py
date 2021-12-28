@@ -15,6 +15,7 @@ from tqdm import trange
 
 
 class ClassifierType(Enum):
+    """ Enumerate of all types of classfiers """
     WORD2VEC = 1
     NAIVES_BAYES = 2
     WORD2VEC_MIX = 3
@@ -42,6 +43,10 @@ class Classifier:
         self.y_test = None
     
     def verify_data(self):
+        """
+        Verify if data contains NaN values, and drop the row in concerned.
+        """
+
         print("Verifying data ... ")
         to_drop = []
         for i in self.data.index:
@@ -52,23 +57,47 @@ class Classifier:
         self.data = self.data.drop(to_drop)
     
     def show_repartition(self) -> None:
+        """
+        Shows the repartition of the data, gives us a good view of why a model is'nt working as excpected.
+        """
+
         print(self.data.groupby(['classe_bon_mauvais'], as_index=False).count())
     
     def save(self, path, features = None):
+        """
+        Saves the model for later uses.
+        """
+        
         dump(self.classifier, path)
     
     def load(self, model_path: str, features_path: str = None):
+        """
+        Loads the model, if the training has been already done.
+        """
+
         self.classifier = load(model_path)
     
     def train(self):
+        """
+        Trains and fit the model to the transformed data.
+        """
+
         print("Training on data...")
         self.classifier.fit(self.X_train, self.y_train)
     
     def predict(self):
+        """
+        Predicts on the test sets, save into a predicitons set.
+        """
+        
         print("Prediciton on tests...")
         self.predictions = self.classifier.predict(self.X_test)
 
     def show_results(self):
+        """
+        Shows the results and compute all the necessary metrics, as the confusion matrix, and the full classification report.
+        """
+        
         print('==========================Classifier Results============================')
         M = confusion_matrix(self.y_test, self.predictions)
         print(M)
@@ -82,9 +111,17 @@ class Classifier:
     # Abstract methods
 
     def get_accuracy(self):
+        """
+        Gets the accuracy score of the predictions.
+        """
+
         return accuracy_score(self.y_test, self.predictions)
 
     def get_precisions(self, c):
+        """
+        Gets the precisions of the predctions.
+        """
+
         d = classification_report(self.y_test, self.predictions, output_dict=True)
         c_str = str(c)
 
@@ -92,6 +129,10 @@ class Classifier:
 
 
     def plot_matrix_classification_report(self, title, cp_path, matrix_path, classes):
+        """
+        Plots the confusion matrix, and save the full classification report.
+        """
+        
         y_test = self.y_test
         predic = self.predictions
 
@@ -111,6 +152,9 @@ class Classifier:
         
 
     def plot_accuracy_precisions(self, title, acc_path, prec_path, label, params, classes: list[int], accuracies: list[int], precisions: list[list[int]]):
+        """
+        Saves the plot of the accuracies and precisions by the differents parameters given in arguments.
+        """
         
         # Accuracy
         plt.title('Accuracy for ' + title)

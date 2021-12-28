@@ -26,7 +26,7 @@ class CleanData:
 
     def correction_spelling(self, review):
         """ 
-        try to elimiminates the unknown word of a sentence, and 
+        Try to elimiminates the unknown words of a sentence, and 
         replacing it by a correct word. 
         """
         
@@ -48,8 +48,9 @@ class CleanData:
 
     def replace_nan(self):
         """
-        Replace nan by 'bon' or 'mauvais' in the dataframe.
+        Replaces nan by 'bon' or 'mauvais' in the dataframe.
         """
+
         to_drop = []
         for i in self.df.index:
             r = self.df['avis'][i]
@@ -64,7 +65,7 @@ class CleanData:
 
     def clean_str(self, review):
         """
-        Remove special characters from the string.
+        Removes special characters from the string.
         """
 
         if len(review) > 0 or review != None:
@@ -77,6 +78,10 @@ class CleanData:
         return review
     
     def clean_stop_words(self, review):
+        """
+        Removes the stop words of the given review.
+        """
+        
         review_list = review.split(" ")
 
         new_list = []
@@ -87,6 +92,10 @@ class CleanData:
         return ' '.join(new_list)
 
     def clean_review(self, review):
+        """
+        Cleans a given review, by removing the unused charactersn, removing the stop words, and correcting the miss spelled word.
+        """
+        
         review = self.clean_str(review)
         review = self.clean_stop_words(review)
         review = self.correction_spelling(review)
@@ -95,7 +104,7 @@ class CleanData:
 
     def clean_dataset(self):
         """
-        Main method call to prepare a text to be vectorized.
+        Main method called to prepare a text to be vectorized.
         """
 
         self.df = self.replace_nan()
@@ -109,7 +118,7 @@ class CleanData:
 
     def filter_long_review(self):
         """
-        Filter the string with too many words.
+        Filters the string with too many words.
         """
 
         to_drop = []
@@ -125,7 +134,7 @@ class CleanData:
 
     def fix_repartition_for_4_classes(self):
         """
-        Fix the bad repartitions of the dataset, by removing randomly good reviews.
+        Fixes the bad repartitions of the dataset, by removing randomly good reviews.
         """
 
         d = self.df.groupby(['classe_bon_mauvais'], as_index=False).count()
@@ -163,7 +172,7 @@ class CleanData:
 
     def fix_repartition(self):
         """
-        Fix the bad repartitions of the dataset, by removing randomly good advice.
+        Fixes the bad repartitions of the dataset, by removing randomly good advice.
         """
 
         d = self.df.groupby(['classe_bon_mauvais'], as_index=False).count()

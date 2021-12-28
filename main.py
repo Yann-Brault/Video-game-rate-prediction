@@ -2,11 +2,10 @@ import pandas as pd
 
 from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
-from src.classifiers.Classifier import Classifier, ClassifierType
+from src.classifiers.Classifier import ClassifierType
 from src.classifiers.ClassifierWord2VecMix import ClassifierWord2VecMix
 from src.classifiers.NaivesBayesClassifier import NaivesBayes
 from src.classifiers.TFIDF_Multinomial import TFIDF_MNB
-from sklearn.neural_network import MLPClassifier
 from src.classifiers.TFIDF_MLP import TFIDF_MLP
 
 from src.utils.clean_data import CleanData
@@ -33,6 +32,10 @@ class PipelineClassifier:
         self.__init_classifier()
 
     def __init_classifier(self):
+        """
+        Inits the classifier by the chosen one.
+        """
+
         if self.classifier_type == ClassifierType.WORD2VEC:
             self.classifier = ClassifierWord2Vec(
                 data=self.data,
@@ -87,6 +90,10 @@ class PipelineClassifier:
             
     
     def load(self, model_path, features_path=None):
+        """
+        Loads the model in the disk.
+        """
+        
         self.classifier.load(model_path, features_path)
         self.classifier.init_sets()
         self.classifier.X_train = None
@@ -94,31 +101,56 @@ class PipelineClassifier:
         self.classifier.fit_transform_data()
 
     def save(self, model_path, features_path=None):
+        """
+        Saves the model in the disk for the given path.
+        """
+        
         self.classifier.save(model_path, features_path)
 
     def train(self):
+        """
+        Calls all the necessaries methods of the classfiers in order to train the model.
+        """
+        
         self.classifier.init_sets()
         self.classifier.init_classifier()
         self.classifier.fit_transform_data()
         self.classifier.train()
 
     def transform_data(self):
+        """
+        Calls all the necessaries methods in order to transform the data to fit with the model.
+        """
+
         self.classifier.init_sets()
         self.classifier.fit_transform_data()
     
     def train_without_transform(self):
+        """
+        Trains the data on already transformed data.
+        """
+        
         self.classifier.train()
     
     def predict(self):
+        """
+        Predicts using the models on the test set.
+        """
+        
         self.classifier.show_repartition()
         self.classifier.predict()
         self.classifier.show_results()
 
     def predict_input(self):
+        """
+        Predict a provided input in the console.
+        """
+        
         review = input("Write a review to predict: \n")
         c = CleanData(self.max_word)
         review = c.clean_review(review)
         review = self.classifier.predict_input(review)
+
 
 
 MODEL_NAME = 'models/Log_Reg_Classic.model'

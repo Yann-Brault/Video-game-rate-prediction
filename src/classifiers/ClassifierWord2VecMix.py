@@ -1,6 +1,3 @@
-import os
-import tempfile
-from typing import DefaultDict
 import pandas as pd
 
 import numpy as np
@@ -11,6 +8,11 @@ from gensim.models import FastText
 
 
 class ClassifierWord2VecMix(ClassifierWord2Vec):
+    """
+    This classifier is closely similar to the Classifier Word2Vec.
+    The difference is from the way of transforming data. While transforming all the data,
+    if words are not found in the pre trained model, it's replaced by a fully created using the librairy FastText provided by gensim.
+    """
 
     def __init__(self, data, word2vec_bin=None, max_word=0, max_iter=0, test_size=0, layers=0, vec_dim=0) -> None:
         super().__init__(

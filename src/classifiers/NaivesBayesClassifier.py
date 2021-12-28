@@ -11,7 +11,13 @@ import nltk
 
 
 class NaivesBayes(Classifier):
+    """
+    This classifiers uses a dictionnary of features, to represent the sentence.
+    First of all a dictionnary is created out of the whole corpus of the given data.
+    Then for each review, a set of their own features are given.
 
+    The machin e learning model uses the basic Naives Bayes model, provided by the librairy nltk.
+    """
 
     def __init__(self, data, nb_word, test_size=0) -> None:
         super().__init__(data)
@@ -31,6 +37,10 @@ class NaivesBayes(Classifier):
         self.word_features = None
     
     def _review_features(self, review):
+        """
+        Builds the dictionnary for a review.
+        """
+        
         review_words = set(review)
         features = {}
         for word in self.word_features:
@@ -38,6 +48,10 @@ class NaivesBayes(Classifier):
         return features
 
     def _compute_word_features(self):
+        """
+        Computes and get all features from the corpus.
+        """
+        
         all_words = nltk.FreqDist()
     
         print("Computes words frequencies ...")
@@ -52,6 +66,10 @@ class NaivesBayes(Classifier):
         self.word_features = list(all_words)[:self.nb_word]
 
     def _compute_features(self, tuple_to_compute):
+        """
+        Computes the features for a single review.
+        """
+        
         print("get Features out of review ...")
         
         featuresets = []
@@ -65,6 +83,10 @@ class NaivesBayes(Classifier):
         return featuresets
 
     def _get_tuples(self, input, output):
+        """
+        Transforms the input and ouptut in tuple to fit the nltk model.
+        """
+        
         print("Get all tuples of reviews ...")
         reviews = []
         size = len(input)
@@ -75,6 +97,10 @@ class NaivesBayes(Classifier):
         return reviews
 
     def load(self, model_path: str, features_path: str = None):
+        """
+        Loads a previous model trained and a previous features dictionnary.
+        """
+        
         self.classifier = load(model_path)
 
         with open(features_path, 'r', encoding='utf8') as fp:
@@ -82,6 +108,10 @@ class NaivesBayes(Classifier):
             self.word_features = data['features']
 
     def save(self, path, features = None):
+        """
+        Save a trained model and a the created features dictionnary.
+        """
+
         data = {}
         data['features'] = self.word_features
         dump(self.classifier, path)
@@ -89,10 +119,18 @@ class NaivesBayes(Classifier):
             json.dump(data, fp, indent=4, ensure_ascii=False)
 
     def init_classifier(self):
+        """
+        Inits the classifier.
+        """
+        
         print("Initialization of the word features dictionnary")
         self._compute_word_features()
 
     def init_sets(self):
+        """
+        Inits and split the train/test sets.
+        """
+
         print("Initialization of train and test sets...")
         X = self.data['avis'].copy()
         y = self.data['classe_bon_mauvais'].copy()
@@ -100,6 +138,10 @@ class NaivesBayes(Classifier):
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=self.test_size)
         
     def fit_transform_data(self):
+        """
+        Tranforms the data of each train and test sets.
+        """
+        
         if self.X_test is not None:
             print(f"Transforming reviews of the test set into tuples of features...")
             self.test_set = self._get_tuples(self.X_test, self.y_test)
@@ -111,10 +153,18 @@ class NaivesBayes(Classifier):
             self.train_set = self._compute_features(self.train_set)
 
     def train(self):
+        """
+        Trains the models on the train set.
+        """
+        
         print("Training on data...")
         self.classifier = nltk.NaiveBayesClassifier.train(self.train_set)
 
     def predict(self):
+        """
+        Predicts on the test set.
+        """
+        
         print("Prediciton on tests...")
 
         self.predictions = []
@@ -131,6 +181,10 @@ class NaivesBayes(Classifier):
             self.predictions.append(observed)
     
     def show_results(self):
+        """
+        Shows results of the prediction, and computes the confusion matrix and the classification report.
+        """
+        
         print("Confusion Matrix:\n", nltk.ConfusionMatrix(self.predictions_labels, self.predictions))
         print("accuracy:", nltk.accuracy(self.predictions_labels, self.predictions))
         
@@ -141,6 +195,9 @@ class NaivesBayes(Classifier):
             print("precision:", nltk.precision(self.refsets[i], self.testsets[i]))
 
     def predict_input(self, review: str):
+        """
+        Predict a review provided in the console.
+        """
+        
         test = self._review_features(review.split())
         print(self.classifier.classify(test))
-        
