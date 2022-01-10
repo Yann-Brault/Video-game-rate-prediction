@@ -11,6 +11,9 @@ from src.classifiers.TFIDF_MLP import TFIDF_MLP
 from src.utils.clean_data import CleanData
 from src.utils.utils import grid
 
+PLOT_MATRIX_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1.plot.png'
+CP_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_cp.txt'
+TILE_CM = 'grid_search_logreg_dataset_0-1_CM'
 
 class PipelineClassifier:
 
@@ -152,69 +155,40 @@ class PipelineClassifier:
         review = self.classifier.predict_input(review)
 
 
-
-MODEL_NAME = 'models/Log_Reg_Classic.model'
-JSON_FEATURES = 'models/features_naives_4000.json'
-
-NB_WORD_NB = 4000
-MAX_WORD = 300
 MAX_ITER = 250
 TEST_SIZE = 1/4
-LAYERS = (13, 13, 13)
-VEC_DIM = 200
 REG = 1.0
-ALPHA = 3.0
-
 MAX_FEATURES = 9000
-VEC_BIN = 'dataset/vectors/frWac_non_lem_no_postag_no_phrase_200_cbow_cut100.bin'
-
 
 CLASSIFIER = ClassifierType.TFIDF_LogReg
-DATA_ANALYSIS = True
-
 DATASET = 'dataset/csv/dataset_0-1.csv'
+MODEL_NAME = 'models/Log_Reg_Classic.model'
+MODEL_PATH = 'dataset\models\LogReg.0-1.model'
 
-PLOT_MATRIX_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1.plot.png'
-CP_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_cp.txt'
-PLOT_ACC_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_acc.plot.png'
-PLOT_PREC_PATH = 'assets/tfidf/grid_search/log_reg/grid_search_logreg_dataset_0-1_prec.plot.png'
-
-TILE_CM = 'grid_search_logreg_dataset_0-1_CM'
-TITLE_PREC_ACC = 'grid_search_logreg_dataset_0-1_Prec_Acc'
-
-MODEL_PATH = ''
 CLASSES = [0,1]
+LOAD = False
+SAVE = True
+
 
 if __name__ == "__main__":
 
-    
-    if DATA_ANALYSIS:
-        df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
+    df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
+    p = PipelineClassifier(CLASSIFIER, data=df, test_size=TEST_SIZE, reg=REG, max_iter=MAX_ITER, max_features=MAX_FEATURES)
 
-        p = PipelineClassifier(CLASSIFIER, data=df, vec_bin=VEC_BIN, max_iter=500, layers=LAYERS, vec_dim=VEC_DIM, test_size=TEST_SIZE)
+    if LOAD:
+        p.load(MODEL_PATH)
+        while(True):
+            p.predict_input()
 
-        p.train()
-        p.predict()
-
-        p.classifier.plot_matrix_classification_report(TILE_CM, CP_PATH, PLOT_MATRIX_PATH, CLASSES)
+        exit()
 
     else:
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
+        p.train()
+        p.predict()
 
-        params = [1500, 3000, 4500, 6000]
-
-        accuracies = []
-        precisions = [[], []]
-
-        for i in range(len(params)):
-
-            p = PipelineClassifier(CLASSIFIER, data=df, nb_word_n=params[i], test_size=TEST_SIZE)
-            p.train()
-            p.predict()
-            
-            accuracies.append(p.classifier.get_accuracy())
-            for c in CLASSES:
-                precisions[c].append(p.classifier.get_precisions(c))
-
-        p.classifier.plot_accuracy_precisions(TITLE_PREC_ACC, PLOT_ACC_PATH, PLOT_PREC_PATH, TITLE_PREC_ACC, params, CLASSES, accuracies, precisions)
+        p.classifier.plot_matrix_classification_report(TILE_CM, CP_PATH, PLOT_MATRIX_PATH, CLASSES, True)
+    
+        if SAVE:
+            p.save(MODEL_PATH)
         

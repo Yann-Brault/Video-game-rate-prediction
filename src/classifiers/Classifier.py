@@ -128,7 +128,7 @@ class Classifier:
         return d[c_str]['precision']
 
 
-    def plot_matrix_classification_report(self, title, cp_path, matrix_path, classes):
+    def plot_matrix_classification_report(self, title, cp_path, matrix_path, classes, show):
         """
         Plots the confusion matrix, and save the full classification report.
         """
@@ -142,13 +142,19 @@ class Classifier:
         fig, ax = plt.subplots(figsize=(12,10))
         ax.set_title('Confusion matrix for '+ title)
         sb.heatmap(df_cm, cmap='YlOrRd', annot=True, fmt='g', ax=ax)
-        plt.savefig(matrix_path)
-
         c_r = classification_report(self.y_test, self.predictions)
-        f = open(cp_path, 'a')
-        f.write(c_r)
-        f.close()
-        
+
+        if show:
+            plt.show()
+            print(c_r)
+            
+        else:
+            plt.savefig(matrix_path)
+
+            f = open(cp_path, 'a')
+            f.write(c_r)
+            f.close()
+            
         
 
     def plot_accuracy_precisions(self, title, acc_path, prec_path, label, params, classes: list[int], accuracies: list[int], precisions: list[list[int]]):

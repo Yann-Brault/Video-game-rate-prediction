@@ -20,9 +20,9 @@ class TFIDF_LogReg(Classifier):
 
     def init_sets(self):
         print("Initialization of train and test sets...")
-        td = TfidfVectorizer(max_features=self.max_features) 
+        self.td = TfidfVectorizer(max_features=self.max_features) 
         X = self.data['avis'].copy()
-        X = td.fit_transform(X).toarray()
+        X = self.td.fit_transform(X).toarray()
         y = self.data['classe_bon_mauvais'].copy()
 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=self.test_size, random_state=0)
@@ -30,3 +30,8 @@ class TFIDF_LogReg(Classifier):
     def init_classifier(self):
         print(f"Initialization of the LogReg Classifier with a reg of {self.regularization} and {self.max_iter} max iteration.")
         self.classifier = LogisticRegression(C=self.regularization, max_iter=self.max_iter)
+
+    def predict_input(self, review: str):
+        array = self.td.transform([review])
+        prediction = self.classifier.predict(array)
+        print(prediction)
