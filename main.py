@@ -1,4 +1,11 @@
+'''
+Usage: python ./main.py [mode]
+    mode = predict or train
+'''
+
+
 import pandas as pd
+import sys
 
 from src.classifiers.TFIDF_LogReg import TFIDF_LogReg
 from src.classifiers.ClassifierWord2Vec import ClassifierWord2Vec
@@ -174,15 +181,18 @@ if __name__ == "__main__":
 
     df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
     p = PipelineClassifier(CLASSIFIER, data=df, test_size=TEST_SIZE, reg=REG, max_iter=MAX_ITER, max_features=MAX_FEATURES)
+    
+    if len(sys.argv) < 2:
+        print(__doc__)
 
-    if LOAD:
+    elif sys.argv[1] == "predict":
         p.load(MODEL_PATH)
         while(True):
             p.predict_input()
 
         exit()
 
-    else:
+    elif sys.argv[1] == "train":
         df = pd.read_csv(DATASET)[['classe_bon_mauvais', 'avis']]
         p.train()
         p.predict()
@@ -191,4 +201,7 @@ if __name__ == "__main__":
     
         if SAVE:
             p.save(MODEL_PATH)
+
+    else:
+        print(__doc__)
         
